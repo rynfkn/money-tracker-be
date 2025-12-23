@@ -7,7 +7,7 @@ import  { env } from "./config/env.js"
 import { notFoundHandler } from "./middlewares/notfound.middleware.js";
 import { errorMiddleware } from "./middlewares/error.middleware.js";
 
-import { healthRouter } from "./routes/health.route.js"
+import routes from "./routes/index.js";
 
 export const app = express()
 
@@ -28,7 +28,4 @@ app.use(express.urlencoded({
 
 app.use(morgan(env.NODE_ENV == "production" ? "combined" : "dev"));
 
-app.use("/health", healthRouter);
-
-app.use(notFoundHandler);
-app.use(errorMiddleware);
+app.use(routes);
