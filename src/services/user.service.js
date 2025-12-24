@@ -47,5 +47,5 @@ export async function userRegisterService(userName, userEmail, hashPassword) {
 
     const user = await db.insert(users).values(userData).returning();
 
-    return user;
+    return user[0];
 }
