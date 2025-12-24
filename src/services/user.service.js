@@ -29,3 +29,23 @@ export async function userLoginService(userEmail, userPassword) {
 
     return user;
 }
+
+export async function getUserByEmailService(userEmail) {
+    const result = await db.select().from(users).where(eq(users.email, userEmail));
+    if (result.length === 0) {
+        return false;
+    }
+    return true;
+}
+
+export async function userRegisterService(userName, userEmail, hashPassword) {
+    const userData = {
+        username: userName,
+        email: userEmail,
+        password: hashPassword
+    };
+
+    const user = await db.insert(users).values(userData).returning();
+
+    return user;
+}

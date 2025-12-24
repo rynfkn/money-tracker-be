@@ -1,7 +1,7 @@
 import { Param } from "drizzle-orm";
-import { getAllUserService, getUserByIdService } from "../services/user.service.js";
+import bcrypt from "bcrypt";
+import { getAllUserService, getUserByEmailService, getUserByIdService, userRegisterService } from "../services/user.service.js";
 import { userLoginService } from "../services/user.service.js";
-
 export async function getAllUserController(req, res){
     const users = await getAllUserService();
 
@@ -12,7 +12,7 @@ export async function getAllUserController(req, res){
 };
 
 export async function getUserByIdController(req, res) {
-    const userId = req.user?.id || req.params.id;
+    const userId = req.params.id;
     const user = await getUserByIdService(userId);
 
     if(!user) {
@@ -26,7 +26,8 @@ export async function getUserByIdController(req, res) {
         sucess: true,
         data: {
             user: {
-                id:user.id,
+                id:user.userId,
+                username: user.username,
                 email: user.email
             }
         }
@@ -51,7 +52,33 @@ export async function userLoginController(req, res) {
         data: {
             userId: user.userId,
             email: user.email
+            
         }
     });
     
+}
+
+export async function userRegisterController(req, res) {
+    const { userName, userEmail, userPassword } = req.body;
+
+    const existingUser = await getUserByEmailService(userEmail);
+    if(!existingUser) {
+        const hashPassword = await bcrypt.hash(userPassword, 10);
+
+        const user = await userRegisterService(userName, userEmail, hashPassword);
+
+        return res.status(201).json({
+            success: true,
+            message: "User created",
+            data: {
+                username: user[0].username,
+                email: user[0].email
+            }
+        });
+    }
+
+    res.status(409).json({
+        success: false,
+        message: "User already exist"
+    });
 }
