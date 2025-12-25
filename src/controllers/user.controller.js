@@ -112,7 +112,7 @@ export async function userRegisterController(req, res) {
             });
         }
 
-        const hashPassword = await bcrypt(userPassword, 10);
+        const hashPassword = await bcrypt.hash(userPassword, 10);
         const user = await userRegisterService(userName, userEmail, hashPassword);
 
         res.status(201).json({
