@@ -11,8 +11,6 @@ export function authenticate(req, res, next) {
         });
     }
 
-    console.log(token);
-
     // const tokenWithoutBearer = token.split(' ')[1];
     
     jwt.verify(token, env.JWT_ACCESS_SECRET, (err, decoded) => {
