@@ -2,6 +2,8 @@ import bcrypt from "bcrypt";
 import { getAllUserService, getUserByEmailService, getUserByIdService, userRegisterService } from "../services/user.service.js";
 import { userLoginService } from "../services/user.service.js";
 
+import { generateToken } from "../utils/jwt.js"
+
 export async function getAllUserController(req, res) {
     try {
 
@@ -70,14 +72,15 @@ export async function userLoginController(req, res) {
             });
         }
 
+        const userToken = generateToken(user);
 
         res.status(200).json({
             success: true,
             message: "You are logged in",
             data: {
                 userId: user.userId,
-                email: user.email
-
+                email: user.email,
+                token: userToken,
             }
         });
 
