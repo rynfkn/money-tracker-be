@@ -1,5 +1,6 @@
-export function notFoundHandler(req, res, _next) {
+export function notFoundMiddleware(req, res, next) {
     res.status(404).json({
+        success: false,
         message: "Route not found",
         path: req.originalUrl,
     });

@@ -4,7 +4,7 @@ import { userLoginService } from "../services/user.service.js";
 
 import { generateToken } from "../utils/jwt.js"
 
-export async function getAllUserController(req, res) {
+export async function getAllUserController(req, res, next) {
     try {
 
         const users = await getAllUserService();
@@ -14,14 +14,11 @@ export async function getAllUserController(req, res) {
             data: users
         });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
+        next(error);
     }
 };
 
-export async function getUserByIdController(req, res) {
+export async function getUserByIdController(req, res, next) {
     try {
 
         const userId = req.params.id;
@@ -45,14 +42,11 @@ export async function getUserByIdController(req, res) {
             }
         });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
+        next(error);
     }
 }
 
-export async function userLoginController(req, res) {
+export async function userLoginController(req, res, next) {
     try {
         const { userEmail, userPassword } = req.body;
         if (!userEmail || userPassword === undefined) {
@@ -85,14 +79,11 @@ export async function userLoginController(req, res) {
         });
 
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
+        next(error);
     }
 }
 
-export async function userRegisterController(req, res) {
+export async function userRegisterController(req, res, next) {
     try {
 
         const { userName, userEmail, userPassword } = req.body;
@@ -124,9 +115,6 @@ export async function userRegisterController(req, res) {
             }
         });
     } catch(error) {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
+        next(error);
     }
 }

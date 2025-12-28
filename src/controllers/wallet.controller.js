@@ -4,41 +4,43 @@ import { createUserWalletService } from "../services/wallet.service.js";
 import { updateUserWalletService } from "../services/wallet.service.js";
 import { deleteUserWalletService } from "../services/wallet.service.js";
 
-export async function getUserWalletsController(req, res) {
-    const userId = req.params.id;
-    const userWallets = await getUserWalletsService(userId);
+export async function getUserWalletsController(req, res, next) {
+    try{
 
-    if(!userWallets) {
-        return res.status(200).json({
-            success:true,
-            message: "User has no wallet",
-            data: []
+        const userId = req.params.id;
+        const userWallets = await getUserWalletsService(userId);
+        
+        if(!userWallets) {
+            return res.status(200).json({
+                success:true,
+                message: "User has no wallet",
+                data: []
+            });
+        }
+        
+        const walletData = userWallets.map(wallet => ({
+            walletId: wallet.walletId,
+            walletName: wallet.walletName,
+            balance: wallet.balance
+        }));
+        
+        res.status(200).json({
+            success: true,
+            message: "Sucess get user wallets",
+            data: walletData
         });
+    } catch(error) {
+        next(error);
     }
-
-    const walletData = userWallets.map(wallet => ({
-        walletId: wallet.walletId,
-        walletName: wallet.walletName,
-        balance: wallet.balance
-    }));
-
-    res.status(200).json({
-        success: true,
-        message: "Sucess get user wallets",
-        data: walletData
-    });
 }
 
 
-export async function createUserWalletController(req, res) {
+export async function createUserWalletController(req, res, next) {
     const userId = req.params.id;
     const { walletName, balance } = req.body;
 
     if(!walletName || balance === undefined) {
-        return res.status(400).json({
-            success: false,
-            message: "walletName and balance are required"
-        });
+        next(error);
     }
 
     try {
@@ -50,10 +52,7 @@ export async function createUserWalletController(req, res) {
             data: newWallet
         });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
+        next(error);
     }
 }
 
@@ -77,10 +76,7 @@ export async function updateUserWalletController(req, res) {
             data: updatedWallet
         });
     } catch(error) {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
+        next(error);
     }
 }
 
@@ -103,9 +99,6 @@ export async function deleteUserWalletController(req, res) {
             data: result
         });
     } catch(error) {
-        res.status(500).json({
-            success:false,
-            message: error.message
-        });
+        next(error);
     }
 }

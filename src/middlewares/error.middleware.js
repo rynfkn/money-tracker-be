@@ -1,11 +1,12 @@
-export function errorMiddleware(err, _req, res, _next) {
-    console.log(err);
+export function errorMiddleware(err, req, res, next) {
+    console.error(err.stack);
+    
+    const errStatus = err.statusCode || 500;
+    const errMessage = err.message || "Something went wrong!";
 
-    const status = err.statusCode || err.status || 500;
-    const message = err.message || "Internal Server Error";
-
-    res.status(status).json({
-        message,
-        ...(process.env.NODE_ENV != "production" ? {stack: err.stack} : {}),
+    res.status(errStatus).json({
+        success:false, 
+        status: errStatus,
+        message: errMessage
     });
-}
+};
