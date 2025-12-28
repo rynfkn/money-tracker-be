@@ -87,9 +87,11 @@ export async function getUserReportByCategoryService(userId, type, from, to) {
 
 export async function getUserReportTrendService(userId, granularity, from, to) {
     let interval = 'day';
+    if (granularity === 'monthly') interval = 'month';
+    if (granularity === 'yearly') interval = 'year';
 
-    const dailyTrendData = db.select({
-        date: sql`DATE_TRUNC(${sql.raw(interval)}, ${transactions.transactionDate})`.as('period'),
+    const trendData = await db.select({
+        date: sql`date_trunc(${sql.raw(`'${interval}'`)}, ${transactions.transactionDate})`.as('date'),
         income: sql`COALESCE(SUM(CASE WHEN ${transactions.transactionType} = 'INCOME' THEN ${transactions.amount} ELSE 0 END), 0)`.mapWith(Number),
         expense: sql`COALESCE(SUM(CASE WHEN ${transactions.transactionType} = 'EXPENSE' THEN ${transactions.amount} ELSE 0 END), 0)`.mapWith(Number),
         net: sql`COALESCE(SUM(CASE 
@@ -99,11 +101,23 @@ export async function getUserReportTrendService(userId, granularity, from, to) {
     })
         .from(transactions)
         .innerJoin(wallets, eq(transactions.walletId, wallets.walletId))
-        .where(and(
-            eq(wallets.userId, userId)
-        ))
-        .groupBy(sql`DATE_TRUNC(${sql.raw(interval)}, ${transactions.transactionDate})`)
-        .orderBy(asc(sql`DATE_TRUNC(${sql.raw(interval)}, ${transactions.transactionDate})`))
+        .innerJoin(users, eq(wallets.userId, users.userId))
+        .where(eq(users.userId, userId))
+        .groupBy(sql`date`)
+        .orderBy(asc(sql`date`))
 
-    console.log(dailyTrendData);
+    
+    const formattedData = trendData.map(data => ({
+        date: new Date(data.date).toISOString().split('T')[0],
+        income: data.income.toFixed(4),
+        expense: data.expense.toFixed(4),
+        net: data.net.toFixed(4)
+    }));
+
+    return {
+        granularity: granularity || 'daily',
+        from,
+        to,
+        series: formattedData
+    };
 }
