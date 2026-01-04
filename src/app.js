@@ -30,6 +30,7 @@ app.use(express.urlencoded({
 app.use(morgan("combined"));
 
 app.use("/api/v1", routes);
+app.get("/", (req, res) => res.status(200).send("OK"));
 
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);
