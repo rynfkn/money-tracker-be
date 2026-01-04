@@ -31,5 +31,5 @@ app.use(morgan("combined"));
 
 app.use("/api/v1", routes);
 
-app.use(errorMiddleware);
 app.use(notFoundMiddleware);
+app.use(errorMiddleware);

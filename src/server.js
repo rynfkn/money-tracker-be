@@ -2,7 +2,7 @@ import { app } from "./app.js";
 import { env } from "./config/env.js";
 
 const server = app.listen(env.PORT, () => {
-    console.log(`[${env.NODE_ENV}] API running on https://localhost:${env.PORT}`);
+    console.log(`[${env.NODE_ENV}] API running on http://localhost:${env.PORT}`);
 });
 
 function shutdown(signal) {
