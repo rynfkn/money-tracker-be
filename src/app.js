@@ -14,8 +14,9 @@ export const app = express()
 app.use(helmet());
 app.use(
     cors({
-        origin: env.CORS_ORIGIN === "*" ? true : env.CORS_ORIGIN,
-        credentials: true,
+        // origin: env.CORS_ORIGIN === "*" ? true : env.CORS_ORIGIN,
+        origin: true,
+        credentials: false,
     })
 );
 
@@ -25,9 +26,10 @@ app.use(express.urlencoded({
     extended: true
 }));
 
-app.use(morgan(env.NODE_ENV == "production" ? "combined" : "dev"));
+// app.use(morgan(env.NODE_ENV == "production" ? "combined" : "dev"));
+app.use(morgan("combined"));
 
-app.use(routes);
+app.use("/api/v1", routes);
 
 app.use(errorMiddleware);
 app.use(notFoundMiddleware);
