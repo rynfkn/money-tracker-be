@@ -6,7 +6,7 @@ import morgan from "morgan";
 // import { notFoundMiddleware } from "./middlewares/notfound.middleware.js";
 // import { errorMiddleware } from "./middlewares/error.middleware.js";
 
-// import routes from "./routes/index.js";
+import routes from "./routes/index.js";
 
 export const app = express()
 
@@ -38,7 +38,7 @@ app.get("/health", (req, res) => {
     node: process.version,
   });
 });
-// app.use("/api/v1", routes);
+app.use("/api/v1", routes);
 
 // app.use(notFoundMiddleware);
 // app.use(errorMiddleware);
