@@ -3,11 +3,10 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 
-import  { env } from "./config/env.js"
-import { notFoundMiddleware } from "./middlewares/notfound.middleware.js";
-import { errorMiddleware } from "./middlewares/error.middleware.js";
+// import { notFoundMiddleware } from "./middlewares/notfound.middleware.js";
+// import { errorMiddleware } from "./middlewares/error.middleware.js";
 
-import routes from "./routes/index.js";
+// import routes from "./routes/index.js";
 
 export const app = express()
 
@@ -21,7 +20,6 @@ app.use(
 );
 
 app.use(express.json());
-
 app.use(express.urlencoded({
     extended: true
 }));
@@ -29,8 +27,18 @@ app.use(express.urlencoded({
 // app.use(morgan(env.NODE_ENV == "production" ? "combined" : "dev"));
 app.use(morgan("combined"));
 
-app.use("/api/v1", routes);
-app.get("/", (req, res) => res.status(200).send("OK"));
+app.get("/", (req, res) => {
+  res.status(200).send("OK - Express is running on Azure");
+});
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    ok: true,
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+    node: process.version,
+  });
+});
+// app.use("/api/v1", routes);
 
-app.use(notFoundMiddleware);
-app.use(errorMiddleware);
+// app.use(notFoundMiddleware);
+// app.use(errorMiddleware);
