@@ -106,12 +106,15 @@ export async function userRegisterController(req, res, next) {
         const hashPassword = await bcrypt.hash(userPassword, 10);
         const user = await userRegisterService(userName, userEmail, hashPassword);
 
+        const userToken = generateToken(user);        
+
         res.status(201).json({
             success: true,
             message: "User created",
             data: {
                 username: user.username,
-                email: user.email
+                email: user.email,
+                token: userToken
             }
         });
     } catch(error) {
