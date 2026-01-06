@@ -46,6 +46,41 @@ export async function getUserByIdController(req, res, next) {
     }
 }
 
+export async function getMeController(req, res, next) {
+    try {
+        const userId = req.user?.id;
+
+        if(!userId) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized: Token invalid or missing user ID"
+            });
+        }
+
+        const user = await getUserByIdService(userId);
+
+        if(!user) {
+            return res.status(401).json({
+                succes:false,
+                message: "User not found"
+            });
+        }
+
+        res.status(200).json({
+            succes: true,
+            message: "Sucess get me",
+            data: {
+                userId: user.userId,
+                username: user.username,
+                email: user.email
+            }
+        });
+
+    } catch(error) {
+        next(error);
+    }
+} 
+
 export async function userLoginController(req, res, next) {
     try {
         const { userEmail, userPassword } = req.body;
